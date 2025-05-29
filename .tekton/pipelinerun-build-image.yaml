@@ -20,6 +20,8 @@ spec:
       value: "{{ revision }}"
     - name: nexus_registry_secret
       value: docker-registry
+    - name: gitops_repo_url
+      value: https://github.com/halukornek/gitops-example.git
   pipelineRef:
     name: build-image
   workspaces:
