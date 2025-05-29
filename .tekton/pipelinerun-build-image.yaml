@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-image-run
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "[push]"
+    pipelinesascode.tekton.dev/on-target-branch: "[*]"
+    pipelinesascode.tekton.dev/pipeline: ".tekton/pipeline-build-image.yaml"
+    pipelinesascode.tekton.dev/task: ".tekton/placeholder.yaml"
+    pipelinesascode.tekton.dev/task-1: ".tekton/maven-build.yaml"
+    pipelinesascode.tekton.dev/on-path-change: "[src/***, pom.xml]"
+    # pipelinesascode.tekton.dev/on-path-change-ignore: "[README.md]"
+    pipelinesascode.tekton.dev/cancel-in-progress: "true"
+    pipelinesascode.tekton.dev/max-keep-runs: "2"
+spec:
+  params:
+    - name: repo_url
+      value: "{{ repo_url }}"
+    - name: revision
+      value: "{{ revision }}"
+    - name: nexus_registry_secret
+      value: docker-registry
+  pipelineRef:
+    name: build-image
+  workspaces:
+    - name: repo-credentials
+      secret:
+        secretName: repo-hr-omega
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi

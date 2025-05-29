@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitops-deploy
+spec:
+  params:
+    - name: CONTEXT_DIR
+      type: string
+      description: >-
+        The context directory within the repository for sources on
+        which we want to execute maven goals.
+      default: "gitops"
+    - name: VERSION
+      type: string
+    - name: ENVIRONMENT
+      type: string
+    - name: APP_NAME
+      type: string
+  steps:
+    - name: patch-version
+      image: quay.io/redhat-cop/tekton-task-helm:3.6.3
+      workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
+      script: |
+        #!/bin/sh
+        yq eval -i '.images[0].newTag = $(params.VERSION)" "$overlays/$(params.ENVIRONMENT)/kustomization.yaml"
+  workspaces:
+    - name: source
+        

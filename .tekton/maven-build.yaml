@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: maven-build
+spec:
+  params:
+    - name: MAVEN_ARGS
+      type: string
+      description: "Arguments for Maven"
+    - name: CONTEXT_DIR
+      type: string
+      description: >-
+        The context directory within the repository for sources on
+        which we want to execute maven goals.
+      default: "."
+  results:
+    - name: VERSION
+      description: Version of application
+  steps:
+    - name: build
+      image: maven:3.8.4-openjdk-17
+      workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
+      script: |
+        #!/bin/sh
+        /usr/bin/mvn $(params.MAVEN_ARGS) -Djib.to.auth.username=$REGISTRY_USERNAME -Djib.to.auth.password=$REGISTRY_PASSWORD -X
+        echo -n $(/usr/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout) | xargs echo -n | tee $(results.VERSION.path)
+  workspaces:
+    - name: source
+      description: The workspace consisting of maven project.
+        

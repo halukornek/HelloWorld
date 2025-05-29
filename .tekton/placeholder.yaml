@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: placeholder
+spec:
+  params:
+    - name: taskname
+      type: string
+  steps:
+    - name: step1
+      image: ubuntu
+      script: |
+        #!/bin/bash
+        echo "Starting Task $(params.taskname)!"
