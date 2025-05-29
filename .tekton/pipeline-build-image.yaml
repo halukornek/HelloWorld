@@ -119,6 +119,8 @@ spec:
           value: dev
         - name: APP_NAME
           value: helloworld
+        - name: CONTEXT_DIR
+          value: gitops
       workspaces:
         - name: source
           workspace: shared-workspace

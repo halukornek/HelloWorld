@@ -22,7 +22,7 @@ spec:
       workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
       script: |
         #!/bin/sh
-        yq eval -i '.images[0].newTag = $(params.VERSION)" "$overlays/$(params.ENVIRONMENT)/kustomization.yaml"
+        yq eval -i .images[0].newTag=\"$(params.VERSION)\" "$(params.APP_NAME)/overlays/$(params.ENVIRONMENT)/kustomization.yaml"
   workspaces:
     - name: source
         
